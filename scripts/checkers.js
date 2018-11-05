@@ -65,7 +65,6 @@ function makeBoard(nameOne, nameTwo) {
   nameTwoHTML.innerHTML = nameTwo;
   nameTwoHTML.style = "position:absolute; text-align: center; margin-left: auto;";
   nameTwoHTML.style.top = (row + 1) * 64;
-  nameTwoHTML
   console.log(row);
   board.appendChild(nameTwoHTML);
 }
