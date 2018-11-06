@@ -2,10 +2,11 @@ const rows = 8;
 const columns = 8;
 let selectedRow = 0;
 let selectedColumn = 0;
+let turn = -1; // -1 when whites turn, 1 when blacks turn
 let pieceSelected = 0; // 0 when no piece has been selected. selected piece's type identifier when a piece has been selected
 let board = document.getElementById('board');
-
 let tile = new Array(rows);
+let possibleMoves = new Array(0);
 for (let i = 0; i < rows; i++) {
   tile[i] = new Array(columns)
 }
@@ -15,9 +16,57 @@ for (let i = 0; i < rows; i++) {
  
 makeBoard(nameUm, nameDois);
 
+function passTurn(){
+  pieceSelected = 0;
+  selectedRow = 0;
+  selectedColumn = 0;
+  turn = turn * -1;
+}
+
+function setPossibleMove(tile){
+  tile.src = "../pictures/available_move_black_square.png";
+  possibleMoves.push(tile);
+}
+
+function clearPossibleMoves(){
+  for(let i = possibleMoves.length; i > 0; i--){
+    possibleMoves.pop().src = "../pictures/empty_black_square.png";
+  }
+}
+
+function findSimpleMoves(source){
+  let side = -1;
+  let frontSides = [source.row + 1 * turn, 0];
+  //check front moves
+  while(side <= 1){
+    frontSides[1] = source.column + side * turn;
+    if(frontSides[0] >= 0 && frontSides[0] < rows){
+      if(frontSides[1] >= 0 && frontSides[1] < columns){
+        if(tile[frontSides[0]][frontSides[1]].piece == 0){
+          setPossibleMove(tile[frontSides[0]][frontSides[1]]);
+        }
+      }
+    }
+  side += 2;
+  }
+}
+
 function removePieceFromBoard(row, column){
   tile[row][column].piece = 0;
   tile[row][column].src = "../pictures/empty_black_square.png";
+}
+
+function selectPiece(source){
+  pieceSelected = source.piece;
+  selectedRow = source.row;
+  selectedColumn = source.column;
+}
+
+function canMovePieceToTile(row, column){
+ let myMove = possibleMoves.filter(possibleMove => {
+    return possibleMove.column === column && possibleMove.row === row;
+  })
+  return myMove.length > 0;
 }
 
 function placePieceOnBoard(row, column, piece){
@@ -94,26 +143,26 @@ function makeBoard(nameOne, nameTwo) {
  
 function click(event) {
   let source = event.target;
-  
+  if(source.piece * turn > 0){ //Select/reselect a piece
+    clearPossibleMoves();
+    selectPiece(source);
+    findSimpleMoves(source);
+  }
   if(pieceSelected != 0){
     /*Where to move the selected piece?*/
-    if(source.piece == 0){  
-      removePieceFromBoard(selectedRow, selectedColumn);
-      placePieceOnBoard(source.row, source.column, pieceSelected);
-      pieceSelected = 0;
+    
+    if(source.piece == 0){ 
+      if(canMovePieceToTile(source.row, source.column)){
+        console.log("MEXER");
+        removePieceFromBoard(selectedRow, selectedColumn);
+        clearPossibleMoves();
+        placePieceOnBoard(source.row, source.column, pieceSelected);
+        passTurn();
+      }
+      console.log("NAO MEXER");
     }
     else{
       board.message = "Please select an empty space to move your piece"
-    }
-  }
-  else{
-    if(source.piece < 0){
-      pieceSelected = source.piece;
-      selectedRow = source.row;
-      selectedColumn = source.column;
-    }
-    else{
-      board.message = "Please select a valid space"
     }
   }
 }
