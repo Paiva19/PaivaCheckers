@@ -78,8 +78,7 @@ function placePieceOnBoard(row, column, piece){
     case 2: 
       tile[row][column].src = "../pictures/black_special_black_square.png";
       break;
-    case -1: 
-      console.log("yay");
+    case -1:
       tile[row][column].src = "../pictures/white_common_black_square.png";
       break;
     case -2: 
@@ -153,13 +152,11 @@ function click(event) {
     
     if(source.piece == 0){ 
       if(canMovePieceToTile(source.row, source.column)){
-        console.log("MEXER");
         removePieceFromBoard(selectedRow, selectedColumn);
         clearPossibleMoves();
         placePieceOnBoard(source.row, source.column, pieceSelected);
         passTurn();
       }
-      console.log("NAO MEXER");
     }
     else{
       board.message = "Please select an empty space to move your piece"
