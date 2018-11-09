@@ -5,6 +5,8 @@ let selectedColumn = 0;
 let turn = -1; // -1 when whites turn, 1 when blacks turn
 let pieceSelected = 0; // 0 when no piece has been selected. selected piece's type identifier when a piece has been selected
 let board = document.getElementById('board');
+let killStreak = false;
+let canKill = false;
 let tile = new Array(rows);
 let possibleMoves = new Array(0);
 for (let i = 0; i < rows; i++) {
@@ -21,6 +23,7 @@ function passTurn(){
   selectedRow = 0;
   selectedColumn = 0;
   turn = turn * -1;
+  killStreak = false;
 }
 
 function setPossibleMove(tile){
@@ -45,9 +48,42 @@ function findSimpleMoves(source){
         if(tile[frontSides[0]][frontSides[1]].piece == 0){
           setPossibleMove(tile[frontSides[0]][frontSides[1]]);
         }
+        else{
+          if(tile[frontSides[0]][frontSides[1]].piece * turn < 0){
+            checkKillThisPiece(frontSides[0], frontSides[1], frontSides[0] + turn, frontSides[1] + side*turn);
+          }
+        }
       }
     }
   side += 2;
+  }
+}
+
+function findKillingStreakMoves(sourceRow, sourceColumn){
+  let i = -1;
+  let j = -1;
+  while(i < 2){
+    while(j < 2){
+      if((sourceRow + 2*i) < rows && (sourceColumn + 2*j) < columns && (columns && sourceRow + 2*i) > -1 && (sourceColumn + 2*j) > -1){ 
+        if(tile[sourceRow + i][sourceColumn + j].piece * turn < 0){
+          checkKillThisPiece(sourceRow + i, sourceColumn + j, sourceRow + 2*i, sourceColumn  + 2*j);
+        }
+      }
+      j = j + 2;
+    }
+    j = -1;
+    i = i + 2;
+  }
+  if(possibleMoves.length == 0) killStreak = false;
+  else killStreak = true;
+
+}
+
+function checkKillThisPiece(victimRow, victimColumn, goingRow, goingColumn){
+  if(goingRow < rows && goingColumn < columns && goingRow >= 0 && goingColumn >= 0){
+    if(tile[goingRow][goingColumn].piece == 0){
+      setPossibleMove(tile[goingRow][goingColumn]);
+    }
   }
 }
 
@@ -85,6 +121,23 @@ function placePieceOnBoard(row, column, piece){
       tile[row][column].src = "../pictures/white_special_black_square.png";
       break;
   }
+}
+
+function movePiece(source){
+  removePieceFromBoard(selectedRow, selectedColumn);
+  clearPossibleMoves();
+  placePieceOnBoard(source.row, source.column, pieceSelected);
+  if(source.row - selectedRow > 1 || source.row - selectedRow < -1){
+    removePieceFromBoard((source.row + selectedRow)/2, (source.column + selectedColumn)/2);
+    findKillingStreakMoves(source.row, source.column);
+  }
+  if(killStreak){
+    selectPiece(source);
+  }
+  else{
+    passTurn();
+  }
+  
 }
 
 function makeBoard(nameOne, nameTwo) {
@@ -139,10 +192,10 @@ function makeBoard(nameOne, nameTwo) {
   nameTwoHTML.style.top = (row + 1) * 64;
   board.appendChild(nameTwoHTML);
 }
- 
+
 function click(event) {
   let source = event.target;
-  if(source.piece * turn > 0){ //Select/reselect a piece
+  if(source.piece * turn > 0 && !killStreak){ //Select/reselect a piece
     clearPossibleMoves();
     selectPiece(source);
     findSimpleMoves(source);
@@ -152,10 +205,7 @@ function click(event) {
     
     if(source.piece == 0){ 
       if(canMovePieceToTile(source.row, source.column)){
-        removePieceFromBoard(selectedRow, selectedColumn);
-        clearPossibleMoves();
-        placePieceOnBoard(source.row, source.column, pieceSelected);
-        passTurn();
+        movePiece(source);
       }
     }
     else{
