@@ -37,12 +37,11 @@ function clearPossibleMoves(){
   }
 }
 
-function findSimpleMoves(source){
+function findMoves(row, column, forward){
   let side = -1;
-  let frontSides = [source.row + 1 * turn, 0];
-  //check front moves
+  let frontSides = [row + 1 * turn * forward, 0];
   while(side <= 1){
-    frontSides[1] = source.column + side * turn;
+    frontSides[1] = column + side * turn;
     if(frontSides[0] >= 0 && frontSides[0] < rows){
       if(frontSides[1] >= 0 && frontSides[1] < columns){
         if(tile[frontSides[0]][frontSides[1]].piece == 0){
@@ -50,12 +49,20 @@ function findSimpleMoves(source){
         }
         else{
           if(tile[frontSides[0]][frontSides[1]].piece * turn < 0){
-            checkKillThisPiece(frontSides[0], frontSides[1], frontSides[0] + turn, frontSides[1] + side*turn);
+            checkKillThisPiece(frontSides[0], frontSides[1], frontSides[0] + turn*forward, frontSides[1] + side*turn);
           }
         }
       }
     }
   side += 2;
+  }
+}
+
+function findSimpleMoves(source){
+  //check front moves
+  findMoves(source.row, source.column, 1);
+  if(source.piece*turn == 2){
+    findMoves(source.row, source.column, -1)
   }
 }
 
@@ -123,10 +130,18 @@ function placePieceOnBoard(row, column, piece){
   }
 }
 
+function createKing(row, column){
+  removePieceFromBoard(row, column);
+  placePieceOnBoard(row, column, 2 * turn);
+}
+
 function movePiece(source){
   removePieceFromBoard(selectedRow, selectedColumn);
   clearPossibleMoves();
   placePieceOnBoard(source.row, source.column, pieceSelected);
+  if((source.row == 0 && pieceSelected == -1) ||(source.row == rows - 1 && pieceSelected == 1)){
+    createKing(source.row, source.column);
+  }
   if(source.row - selectedRow > 1 || source.row - selectedRow < -1){
     removePieceFromBoard((source.row + selectedRow)/2, (source.column + selectedColumn)/2);
     findKillingStreakMoves(source.row, source.column);
@@ -136,8 +151,7 @@ function movePiece(source){
   }
   else{
     passTurn();
-  }
-  
+  } 
 }
 
 function makeBoard(nameOne, nameTwo) {
