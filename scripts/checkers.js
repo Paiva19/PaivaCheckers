@@ -27,15 +27,13 @@ function getPlayerNames(variable) {
   return(false);
 }
 
-
-makeBoard(playerName1, playerName2);
-
 function passTurn(){
   pieceSelected = 0;
   selectedRow = 0;
   selectedColumn = 0;
   turn = turn * -1;
-  killStreak = false;
+  killStreak = lookForMandatoryMoves();
+  clearPossibleMoves();
 }
 
 function setPossibleMove(tile){
@@ -70,7 +68,7 @@ function findMoves(row, column, forward){
   }
 }
 
-function findSimpleMoves(source){
+function findPieceMoves(source){
   //check front moves
   findMoves(source.row, source.column, 1);
   if(source.piece*turn == 2){
@@ -78,9 +76,12 @@ function findSimpleMoves(source){
   }
 }
 
-function findKillingStreakMoves(sourceRow, sourceColumn){
+function findKillingMoves(sourceRow, sourceColumn, onStreak){
   let i = -1;
   let j = -1;
+  if(!onStreak){
+    i = 1;
+  }
   while(i < 2){
     while(j < 2){
       if((sourceRow + 2*i) < rows && (sourceColumn + 2*j) < columns && (columns && sourceRow + 2*i) > -1 && (sourceColumn + 2*j) > -1){ 
@@ -148,15 +149,27 @@ function createKing(row, column){
 }
 
 function movePiece(source){
-  removePieceFromBoard(selectedRow, selectedColumn);
-  clearPossibleMoves();
-  placePieceOnBoard(source.row, source.column, pieceSelected);
+  if(!killStreak){
+    removePieceFromBoard(selectedRow, selectedColumn);
+    clearPossibleMoves();  
+    placePieceOnBoard(source.row, source.column, pieceSelected);
+  }
+  else{
+    if(source.row - selectedRow == 1 || source.row - selectedRow == -1){
+      clearPossibleMoves();
+      console.log("You must make a capturing move");
+    }
+  }
   if((source.row == 0 && pieceSelected == -1) ||(source.row == rows - 1 && pieceSelected == 1)){
     createKing(source.row, source.column);
   }
   if(source.row - selectedRow > 1 || source.row - selectedRow < -1){
+    removePieceFromBoard(selectedRow, selectedColumn);
+    clearPossibleMoves();  
+    placePieceOnBoard(source.row, source.column, pieceSelected);
+
     removePieceFromBoard((source.row + selectedRow)/2, (source.column + selectedColumn)/2);
-    findKillingStreakMoves(source.row, source.column);
+    findKillingMoves(source.row, source.column, true);
   }
   if(killStreak){
     selectPiece(source);
@@ -164,6 +177,22 @@ function movePiece(source){
   else{
     passTurn();
   } 
+}
+
+function lookForMandatoryMoves(){
+  var rowCheck, columnCheck;
+  for(rowCheck = 0; rowCheck < rows; rowCheck++){
+    for(columnCheck = 0; columnCheck < columns; columnCheck++){
+      if(tile[rowCheck][columnCheck].piece *  turn > 0){
+        findKillingMoves(rowCheck, columnCheck, false);
+        console.log(killStreak);
+        if(killStreak){      
+          return true;
+        }
+      }
+    }
+  }
+  return false;
 }
 
 function makeBoard(playerNames) {
@@ -192,7 +221,7 @@ function makeBoard(playerNames) {
         }
         else{
           /* 3 last rows */
-          if(8 - row < 4){
+          if(rows - row < 4){
             placePieceOnBoard(row, column, -1)
           }
           else {
@@ -221,14 +250,13 @@ function makeBoard(playerNames) {
 
 function click(event) {
   let source = event.target;
-  if(source.piece * turn > 0 && !killStreak){ //Select/reselect a piece
+  if(source.piece * turn > 0){ //Select/reselect a piece
     clearPossibleMoves();
     selectPiece(source);
-    findSimpleMoves(source);
+    findPieceMoves(source);
   }
   if(pieceSelected != 0){
     /*Where to move the selected piece?*/
-    
     if(source.piece == 0){ 
       if(canMovePieceToTile(source.row, source.column)){
         movePiece(source);
@@ -239,4 +267,9 @@ function click(event) {
     }
   }
 }
+
+
+
+makeBoard(playerName1, playerName2);
+
  
