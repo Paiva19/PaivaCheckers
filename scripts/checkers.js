@@ -12,11 +12,23 @@ let possibleMoves = new Array(0);
 for (let i = 0; i < rows; i++) {
   tile[i] = new Array(columns)
 }
+var playerName1 = "Player 1";
+var playerName2 = "Player 2";
+playerName1 = getPlayerNames("nameOne");
+playerName2 = getPlayerNames("nameTwo");
 
- nameUm = "Lucas";
- nameDois = "Jun";
- 
-makeBoard(nameUm, nameDois);
+function getPlayerNames(variable) {
+  var query = window.location.search.substring(1);
+  var vars = query.split("&");
+  for (var i=0;i<vars.length;i++) {
+          var pair = vars[i].split("=");
+          if(pair[0] == variable){return pair[1];}
+  }
+  return(false);
+}
+
+
+makeBoard(playerName1, playerName2);
 
 function passTurn(){
   pieceSelected = 0;
@@ -140,7 +152,7 @@ function movePiece(source){
   
 }
 
-function makeBoard(nameOne, nameTwo) {
+function makeBoard(playerNames) {
 /* Initialize the game board
  * On the first 3 rows, populate green squares with black pieces
  * On the last 3 rows, populate green squares with white pieces
@@ -148,7 +160,7 @@ function makeBoard(nameOne, nameTwo) {
  * Add event listener only on green squares
  */
   let nameOneHTML = document.createElement("h1");
-  nameOneHTML.innerHTML = nameOne;
+  nameOneHTML.innerHTML = playerName1;
   nameOneHTML.style = "position:absolute; text-align: center; margin-left: auto;";
   nameOneHTML.style.top = 0;
   board.appendChild(nameOneHTML);
@@ -187,7 +199,7 @@ function makeBoard(nameOne, nameTwo) {
     }
   }
   let nameTwoHTML = document.createElement("h1");
-  nameTwoHTML.innerHTML = nameTwo;
+  nameTwoHTML.innerHTML = playerName2;
   nameTwoHTML.style = "position:absolute; text-align: center; margin-left: auto;";
   nameTwoHTML.style.top = (row + 1) * 64;
   board.appendChild(nameTwoHTML);
