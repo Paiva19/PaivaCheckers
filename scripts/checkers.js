@@ -32,7 +32,7 @@ function passTurn(){
   selectedRow = 0;
   selectedColumn = 0;
   turn = turn * -1;
-  killStreak = lookForMandatoryMoves();
+  lookForMandatoryMoves();
   clearPossibleMoves();
 }
 
@@ -74,29 +74,6 @@ function findPieceMoves(source){
   if(source.piece*turn == 2){
     findMoves(source.row, source.column, -1)
   }
-}
-
-function findKillingMoves(sourceRow, sourceColumn, onStreak){
-  let i = -1;
-  let j = -1;
-  if(!onStreak){
-    i = 1;
-  }
-  while(i < 2){
-    while(j < 2){
-      if((sourceRow + 2*i) < rows && (sourceColumn + 2*j) < columns && (columns && sourceRow + 2*i) > -1 && (sourceColumn + 2*j) > -1){ 
-        if(tile[sourceRow + i][sourceColumn + j].piece * turn < 0){
-          checkKillThisPiece(sourceRow + i, sourceColumn + j, sourceRow + 2*i, sourceColumn  + 2*j);
-        }
-      }
-      j = j + 2;
-    }
-    j = -1;
-    i = i + 2;
-  }
-  if(possibleMoves.length == 0) killStreak = false;
-  else killStreak = true;
-
 }
 
 function checkKillThisPiece(victimRow, victimColumn, goingRow, goingColumn){
@@ -160,32 +137,60 @@ function movePiece(source){
       console.log("You must make a capturing move");
     }
   }
-  if((source.row == 0 && pieceSelected == -1) ||(source.row == rows - 1 && pieceSelected == 1)){
-    createKing(source.row, source.column);
-  }
   if(source.row - selectedRow > 1 || source.row - selectedRow < -1){
+    console.log("capturing!!!");
     removePieceFromBoard(selectedRow, selectedColumn);
-    clearPossibleMoves();  
+    clearPossibleMoves();
     placePieceOnBoard(source.row, source.column, pieceSelected);
-
     removePieceFromBoard((source.row + selectedRow)/2, (source.column + selectedColumn)/2);
     findKillingMoves(source.row, source.column, true);
   }
   if(killStreak){
+    console.log("YOU MUST CAPTURE ANOTHER ONE!");
     selectPiece(source);
   }
   else{
+    if((source.row == 0 && pieceSelected == -1) ||(source.row == rows - 1 && pieceSelected == 1)){
+      createKing(source.row, source.column);
+    }
     passTurn();
   } 
 }
 
+function findKillingMoves(sourceRow, sourceColumn, bothWays){
+  let i = -1;
+  let j = -1;
+  if(!bothWays){
+    i = 1;
+  }
+  while(i < 2){
+    while(j < 2){
+      if((sourceRow + 2*i*turn) < rows && (sourceColumn + 2*j) < columns && (sourceRow + 2*i*turn) > -1 && (sourceColumn + 2*j) > -1){ 
+        if(tile[sourceRow + i * turn][sourceColumn + j].piece * turn < 0){
+          checkKillThisPiece(sourceRow + i * turn, sourceColumn + j, sourceRow + 2*i * turn, sourceColumn  + 2*j);
+        }
+      }
+      j = j + 2;
+    }
+    j = -1;
+    i = i + 2;
+  }
+  if(possibleMoves.length == 0) killStreak = false;
+  else killStreak = true;
+
+}
+
+
 function lookForMandatoryMoves(){
   var rowCheck, columnCheck;
+  var bothWays = false;
   for(rowCheck = 0; rowCheck < rows; rowCheck++){
     for(columnCheck = 0; columnCheck < columns; columnCheck++){
       if(tile[rowCheck][columnCheck].piece *  turn > 0){
-        findKillingMoves(rowCheck, columnCheck, false);
-        console.log(killStreak);
+        if(tile[rowCheck][columnCheck].piece * turn > 1 || killStreak){
+          bothWays = true;
+        }
+        findKillingMoves(rowCheck, columnCheck, bothWays);
         if(killStreak){      
           return true;
         }
