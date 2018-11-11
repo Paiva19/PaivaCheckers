@@ -2,6 +2,7 @@ const rows = 8;
 const columns = 8;
 let selectedRow = 0;
 let selectedColumn = 0;
+let endGame = false;
 let turn = -1; // -1 when whites turn, 1 when blacks turn
 let pieceSelected = 0; // 0 when no piece has been selected. selected piece's type identifier when a piece has been selected
 let board = document.getElementById('board');
@@ -32,10 +33,55 @@ function passTurn(){
   selectedRow = 0;
   selectedColumn = 0;
   turn = turn * -1;
-  lookForMandatoryMoves();
+  if(!lookForMandatoryMoves()){
+    if(!checkForAvailableMoves()){
+      endGame = true;
+    }
+  }
+  console.log(possibleMoves.length);
   clearPossibleMoves();
+  if(endGame){
+    console.log("Fim de jogo!");
+    goToVictoryScreen();
+  }
 }
 
+
+function goToVictoryScreen(){
+  var victoryUrl = "../html/victory.html?";
+  victoryUrl += "victor=";
+  if(turn == 1){
+    victoryUrl += playerName2;
+  }
+  else{
+    victoryUrl += playerName1;
+  }
+  window.location.replace(victoryUrl);
+}
+
+function checkForAvailableMoves(){
+  var rowCheck = 0;
+  var columnCheck = 0;
+  while(rowCheck < rows){
+    while(columnCheck < columns){
+      if(tile[rowCheck][columnCheck].piece * turn == 1){
+        findMoves(rowCheck, columnCheck, 1);
+      }
+      if(tile[rowCheck][columnCheck].piece * turn == 2){
+        findMoves(rowCheck, columnCheck, -1);
+      }
+      if(possibleMoves.length > 0){
+        console.log(possibleMoves[0].row, possibleMoves[0].column);
+        return true;
+      }
+      columnCheck++;
+    }
+    columnCheck = 0;
+    rowCheck++;
+  }
+  console.log("nao ha movimentos possiveis");
+  return false;
+}
 function setPossibleMove(tile){
   tile.src = "../pictures/available_move_black_square.png";
   possibleMoves.push(tile);
@@ -72,7 +118,7 @@ function findPieceMoves(source){
   //check front moves
   findMoves(source.row, source.column, 1);
   if(source.piece*turn == 2){
-    findMoves(source.row, source.column, -1)
+    findMoves(source.row, source.column, -1);
   }
 }
 
@@ -191,6 +237,7 @@ function lookForMandatoryMoves(){
           bothWays = true;
         }
         findKillingMoves(rowCheck, columnCheck, bothWays);
+        bothWays = false;
         if(killStreak){      
           return true;
         }
