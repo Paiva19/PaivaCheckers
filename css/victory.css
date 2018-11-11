@@ -1,0 +1,93 @@
+body {
+    background:white;
+}
+
+#victoryMessage {
+    width:600px;
+    height:100px;
+    
+    border-left: 30px solid transparent;
+    border-right:30px solid transparent;
+    border-top: 10px solid transparent;
+    border-radius: px;
+    position:relative;
+    margin:auto;
+    top:20px;
+    left:2px;
+    text-align:center;
+    font-size:30px;
+    background-size: 1px 100%;
+    color:black;
+    }
+
+#allthethings {
+width:0px;
+height:0px;
+
+border-left: 300px solid transparent;
+border-right:300px solid transparent;
+border-top: 200px solid transparent;
+border-radius: px;
+position:relative;
+margin:auto;
+top:20px;
+left:2px;
+}
+
+#backToMenu {
+
+position:relative;
+bottom:100px;
+right:300px;
+height:50px;
+width:600px;
+background:black;
+text-align:center;
+font-size:30px;
+background-size: 1px 300%;
+-webkit-transition:0.5s;
+transition:0.5s;
+color:limegreen;
+cursor:pointer;
+}
+
+#backToMenu:hover {
+background:darkslategray;
+color:white;
+}
+
+#backToMenu p {
+position:relative;
+top:2px;
+right:4px;  
+}        
+
+
+#playAgain {
+
+    position:relative;
+    bottom:100px;
+    right:300px;
+    height:50px;
+    width:600px;
+    background:black;
+    text-align:center;
+    font-size:30px;
+    background-size: 1px 300%;
+    -webkit-transition:0.5s;
+    transition:0.5s;
+    color:limegreen;
+    cursor:pointer;
+    }
+    
+    #playAgain:hover {
+    background:darkslategray;
+    color:white;
+    }
+    
+    #playAgain p {
+    position:relative;
+    top:2px;
+    right:4px;  
+    }        
+    
