@@ -38,10 +38,8 @@ function passTurn(){
       endGame = true;
     }
   }
-  console.log(possibleMoves.length);
   clearPossibleMoves();
   if(endGame){
-    console.log("Fim de jogo!");
     goToVictoryScreen();
   }
 }
@@ -73,7 +71,6 @@ function checkForAvailableMoves(){
         findMoves(rowCheck, columnCheck, -1);
       }
       if(possibleMoves.length > 0){
-        console.log(possibleMoves[0].row, possibleMoves[0].column);
         return true;
       }
       columnCheck++;
@@ -81,7 +78,6 @@ function checkForAvailableMoves(){
     columnCheck = 0;
     rowCheck++;
   }
-  console.log("nao ha movimentos possiveis");
   return false;
 }
 function setPossibleMove(tile){
@@ -182,11 +178,9 @@ function movePiece(source){
   else{
     if(source.row - selectedRow == 1 || source.row - selectedRow == -1){
       clearPossibleMoves();
-      console.log("You must make a capturing move");
     }
   }
   if(source.row - selectedRow > 1 || source.row - selectedRow < -1){
-    console.log("capturing!!!");
     removePieceFromBoard(selectedRow, selectedColumn);
     clearPossibleMoves();
     placePieceOnBoard(source.row, source.column, pieceSelected);
@@ -194,7 +188,6 @@ function movePiece(source){
     findKillingMoves(source.row, source.column, true);
   }
   if(killStreak){
-    console.log("YOU MUST CAPTURE ANOTHER ONE!");
     selectPiece(source);
   }
   else{
