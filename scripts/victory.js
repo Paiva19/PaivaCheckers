@@ -10,3 +10,11 @@ function getName(variable) {
   }
   return(false);
 }
+
+document.getElementById("playAgain").addEventListener("mousedown", click);
+
+function click(event){
+    var gameUrl = "./board.html?nameOne="
+    gameUrl += winner + "&nameTwo=" + loser;
+    window.location.replace(gameUrl);
+}

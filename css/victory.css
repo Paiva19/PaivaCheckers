@@ -61,3 +61,33 @@ position:relative;
 top:2px;
 right:4px;  
 }        
+
+
+#playAgain {
+
+    position:relative;
+    bottom:100px;
+    right:300px;
+    height:50px;
+    width:600px;
+    background:black;
+    text-align:center;
+    font-size:30px;
+    background-size: 1px 300%;
+    -webkit-transition:0.5s;
+    transition:0.5s;
+    color:limegreen;
+    cursor:pointer;
+    }
+    
+    #playAgain:hover {
+    background:darkslategray;
+    color:white;
+    }
+    
+    #playAgain p {
+    position:relative;
+    top:2px;
+    right:4px;  
+    }        
+    
