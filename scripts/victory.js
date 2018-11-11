@@ -1,8 +1,6 @@
 var winner = getName("winner");
 var loser = getName("loser");
-var victoryHTML = document.getElementById("victoryMessage");
-victoryHTML.innerHTML = "<p>" + winner + " HAS WON" + "<\p>";
-
+document.getElementById("victoryMessage").innerHTML = winner + " is the winner!";
 function getName(variable) {
   var query = window.location.search.substring(1);
   var vars = query.split("&");
