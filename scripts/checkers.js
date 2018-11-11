@@ -49,13 +49,15 @@ function passTurn(){
 
 function goToVictoryScreen(){
   var victoryUrl = "../html/victory.html?";
-  victoryUrl += "victor=";
+  victoryUrl += "winner=";
   if(turn == 1){
     victoryUrl += playerName2;
   }
   else{
     victoryUrl += playerName1;
+    playerName1 = playerName2;
   }
+  victoryUrl += "&loser=" + playerName1
   window.location.replace(victoryUrl);
 }
 
